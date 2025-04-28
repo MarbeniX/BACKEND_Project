@@ -2,7 +2,6 @@ package com.backend.projectbackend.service;
 
 import com.backend.projectbackend.dto.exercise.ExerciseCreateDTO;
 import com.backend.projectbackend.dto.routine.RoutineAddExerciseDTO;
-import com.backend.projectbackend.dto.routine.RoutineResponseDTO;
 import com.backend.projectbackend.model.Exercise;
 import com.backend.projectbackend.model.Routine;
 import com.backend.projectbackend.model.User;
@@ -13,7 +12,6 @@ import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

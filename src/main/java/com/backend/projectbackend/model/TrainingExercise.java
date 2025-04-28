@@ -17,14 +17,16 @@ public class TrainingExercise {
     private Integer setNumber;
     private Long restTime;
     private Integer weight;
+    private Integer reps;
 
     public TrainingExercise() {}
 
-    public TrainingExercise(ObjectId exerciseId, Long timeToComplete, Integer setNumber, Long restTime, Integer weight) {
+    public TrainingExercise(ObjectId exerciseId, Long timeToComplete, Integer setNumber, Long restTime, Integer weight, Integer reps) {
         this.timeToComplete = timeToComplete;
         this.setNumber = setNumber;
         this.restTime = restTime;
         this.weight = weight;
+        this.reps = reps;
     }
 
     public ObjectId getId() { return id; }
@@ -41,6 +43,9 @@ public class TrainingExercise {
 
     public Integer getWeight() { return weight; }
     public void setWeight(Integer weight) { this.weight = weight; }
+
+    public Integer getReps() { return reps; }
+    public void setReps(Integer reps) { this.reps = reps; }
 
     @Override
     public String toString() {

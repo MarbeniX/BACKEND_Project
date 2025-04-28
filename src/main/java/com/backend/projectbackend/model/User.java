@@ -13,7 +13,6 @@ import java.util.List;
 
 @Document(collection = "users")
 public class User {
-
     @MongoId
     private ObjectId id;
 
@@ -29,6 +28,7 @@ public class User {
     private Boolean confirmed = false; //Agregar valor por default
     private Boolean admin = false;
 
+    //Defined routines by the user and used as a template to the training session
     @DBRef
     private List<Routine> routines;
 
