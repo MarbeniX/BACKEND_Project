@@ -63,7 +63,7 @@ public class ExerciseService {
         }
     }
 
-    public ApiResponse<List<RoutineAddExerciseDTO>> getAllExercises( User user) {
+    public ApiResponse<List<RoutineAddExerciseDTO>> getAllExercises( User user ) {
         try {
             if(user.getAdmin() == false){
                 return new ApiResponse<>(false, "You do not have access to this action.", null);
