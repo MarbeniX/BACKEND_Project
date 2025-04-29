@@ -51,6 +51,7 @@ public class ExerciseService {
             if(exerciseExists == null){
                 return new ApiResponse<>(false, "Exercise doesn't exist.", null);
             }
+
             exerciseExists.setDescription(request.getDescription());
             exerciseExists.setTitle(request.getTitle());
             exerciseExists.setMuscle(request.getMuscle());
