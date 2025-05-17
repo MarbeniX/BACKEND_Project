@@ -1,23 +1,33 @@
 package com.backend.projectbackend.service;
 
 import com.backend.projectbackend.dto.auth.UpdatePasswordDTO;
+import com.backend.projectbackend.dto.routine.RoutineResponseDTO;
 import com.backend.projectbackend.dto.user.changeUsernameDTO;
+import com.backend.projectbackend.model.Routine;
 import com.backend.projectbackend.model.User;
 import com.backend.projectbackend.repository.AuthRepository;
+import com.backend.projectbackend.repository.RoutineRepository;
 import com.backend.projectbackend.util.responses.ApiResponse;
+import org.bson.types.ObjectId;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     private final AuthRepository authRepository;
     private final PasswordEncoder passwordEncoder;
     private final CloudinaryService cloudinaryService;
+    private final RoutineRepository routineRepository;
 
-    public UserService(AuthRepository authRepository, PasswordEncoder passwordEncoder, CloudinaryService cloudinaryService) {
+    public UserService(AuthRepository authRepository, PasswordEncoder passwordEncoder, CloudinaryService cloudinaryService, RoutineRepository routineRepository) {
         this.authRepository = authRepository;
         this.passwordEncoder = passwordEncoder;
         this.cloudinaryService = cloudinaryService;
+        this.routineRepository = routineRepository;
     }
 
     public ApiResponse<String> changeUsername(changeUsernameDTO request, User user) {
@@ -57,6 +67,26 @@ public class UserService {
         } catch (Exception e) {
             e.printStackTrace();
             return new ApiResponse<>(false, "Internal server error: " + e.getMessage(), null);
+        }
+    }
+
+    public List<RoutineResponseDTO> searchRoutines(String name, Routine.Category category, User user) {
+        if(name != null && category != null) {
+            List<Routine> routines = routineRepository.findByUserIdAndNameContainingIgnoreCaseAndCategory(new ObjectId(String.valueOf(user.getId())), name, category);
+            List<RoutineResponseDTO> routinesDTO = routines.stream().map(RoutineResponseDTO::new).collect(Collectors.toList());
+            return new ArrayList<>(routinesDTO);
+        }else if(name != null){
+            List<Routine> routines = routineRepository.findByUserIdAndNameContainingIgnoreCase(new ObjectId(String.valueOf(user.getId())), name);
+            List<RoutineResponseDTO> routinesDTO = routines.stream().map(RoutineResponseDTO::new).collect(Collectors.toList());
+            return new ArrayList<>(routinesDTO);
+        }else if(category != null){
+            List<Routine> routines = routineRepository.findByUserIdAndCategory(new ObjectId(String.valueOf(user.getId())), category);
+            List<RoutineResponseDTO> routinesDTO = routines.stream().map(RoutineResponseDTO::new).collect(Collectors.toList());
+            return new ArrayList<>(routinesDTO);
+        }else{
+            List<Routine> routines = routineRepository.findByUserId(new ObjectId(String.valueOf(user.getId())));
+            List<RoutineResponseDTO> routinesDTO = routines.stream().map(RoutineResponseDTO::new).collect(Collectors.toList());
+            return new ArrayList<>(routinesDTO);
         }
     }
 }

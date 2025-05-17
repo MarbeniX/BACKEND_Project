@@ -83,8 +83,10 @@ public class RoutineController {
     public ResponseEntity<List<RoutineAddExerciseDTO>> searchExercises(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) Muscle muscle,
-            @RequestParam(required = false) Difficulty difficulty
+            @RequestParam(required = false) Difficulty difficulty,
+            Authentication authentication
     ) {
+        User user = (User) authentication.getPrincipal(); // Usuario autenticado a partir del JWT
         List<RoutineAddExerciseDTO> results = routineService.searchExercises(title, muscle, difficulty);
         return ResponseEntity.ok(results);
     }

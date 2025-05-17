@@ -2,8 +2,10 @@ package com.backend.projectbackend.controllers;
 //ENDPOINTS-
 
 import com.backend.projectbackend.dto.auth.UpdatePasswordDTO;
+import com.backend.projectbackend.dto.routine.RoutineResponseDTO;
 import com.backend.projectbackend.dto.user.CloudinaryImageDTO;
 import com.backend.projectbackend.dto.user.changeUsernameDTO;
+import com.backend.projectbackend.model.Routine;
 import com.backend.projectbackend.model.User;
 import com.backend.projectbackend.service.CloudinaryService;
 import com.backend.projectbackend.service.UserService;
@@ -19,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -64,5 +67,16 @@ public class UserController {
             return ResponseEntity.badRequest().body(response);
         }
         return ResponseEntity.status(201).body(response);
+    }
+
+    @GetMapping("/searchRoutines")
+    public ResponseEntity<List<RoutineResponseDTO>> searchRoutines(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Routine.Category category,
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal(); // Usuario autenticado a partir del JWT
+        List<RoutineResponseDTO> results = userService.searchRoutines(name, category, user);
+        return ResponseEntity.ok(results);
     }
 }
