@@ -6,6 +6,7 @@ public class RoutineAddExerciseDTO {
     private String id;
     private String title;
     private String description;
+    private String imageURL;
     private Exercise.Muscle muscle;
     private Exercise.Difficulty difficulty;
 
@@ -17,6 +18,7 @@ public class RoutineAddExerciseDTO {
         this.description = exercise.getDescription();
         this.muscle = exercise.getMuscle();
         this.difficulty = exercise.getDifficulty();
+        this.imageURL = exercise.getImageURL();
     }
 
     //Setters and getters
@@ -35,4 +37,7 @@ public class RoutineAddExerciseDTO {
 
     public Exercise.Difficulty getDifficulty() { return difficulty; }
     public void setDifficulty(Exercise.Difficulty difficulty) { this.difficulty = difficulty; }
+
+    public String getImageURL() { return imageURL; }
+    public void setImageURL(String imageURL) { this.imageURL = imageURL; }
 }

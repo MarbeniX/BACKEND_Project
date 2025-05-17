@@ -2,15 +2,18 @@ package com.backend.projectbackend.controllers;
 
 import com.backend.projectbackend.dto.exercise.ExerciseCreateDTO;
 import com.backend.projectbackend.dto.routine.RoutineAddExerciseDTO;
+import com.backend.projectbackend.dto.user.CloudinaryImageDTO;
 import com.backend.projectbackend.model.User;
+import com.backend.projectbackend.service.CloudinaryService;
 import com.backend.projectbackend.service.ExerciseService;
 import com.backend.projectbackend.util.responses.ApiResponse;
 import jakarta.mail.MessagingException;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
@@ -23,9 +26,16 @@ public class ExerciseController {
         this.exerciseService = exerciseService;
     }
 
-    @PostMapping("/add-exercise")
-    public ResponseEntity<ApiResponse<String>> addExercise(@Valid @RequestBody ExerciseCreateDTO request, Authentication authentication) throws MessagingException, UnsupportedEncodingException {
+    @PostMapping(value = "/add-exercise")
+    public ResponseEntity<ApiResponse<String>> addExercise(@ModelAttribute ExerciseCreateDTO request, @RequestParam("image") MultipartFile image, Authentication authentication) throws MessagingException, UnsupportedEncodingException {
         User user = (User) authentication.getPrincipal(); // Usuario autenticado a partir del JWT
+        try {
+            CloudinaryImageDTO dataImage = CloudinaryService.uploadImageExercise(image);
+            request.setImageURL(dataImage.getUrl());
+            request.setPublicID(dataImage.getPublicID());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         ApiResponse<String> response = exerciseService.addExercise(request, user);
         if (!response.isSuccess()) {
             return ResponseEntity.badRequest().body(response);
@@ -34,8 +44,15 @@ public class ExerciseController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<String>> updateExercise(@PathVariable String id, @Valid @RequestBody ExerciseCreateDTO request, Authentication authentication) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<ApiResponse<String>> updateExercise(@PathVariable String id, @RequestBody ExerciseCreateDTO request, @RequestParam("image") MultipartFile image, Authentication authentication) throws MessagingException, UnsupportedEncodingException {
         User user = (User) authentication.getPrincipal(); // Usuario autenticado a partir del JWT
+        try {
+            CloudinaryImageDTO dataImage = CloudinaryService.uploadImageExercise(image);
+            request.setImageURL(dataImage.getUrl());
+            request.setPublicID(dataImage.getPublicID());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         ApiResponse<String> response = exerciseService.updateExercise(id, request, user);
         if (!response.isSuccess()) {
             return ResponseEntity.badRequest().body(response);

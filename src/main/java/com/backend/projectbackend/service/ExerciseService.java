@@ -17,11 +17,13 @@ import java.util.stream.Collectors;
 @Service
 public class ExerciseService {
     private final RoutineRepository routineRepository;
+    private final CloudinaryService cloudinaryService;
     private ExerciseRepository exerciseRepository;
 
-    public ExerciseService(ExerciseRepository exerciseRepository, RoutineRepository routineRepository) {
+    public ExerciseService(ExerciseRepository exerciseRepository, RoutineRepository routineRepository, CloudinaryService cloudinaryService) {
         this.exerciseRepository = exerciseRepository;
         this.routineRepository = routineRepository;
+        this.cloudinaryService = cloudinaryService;
     }
 
     public ApiResponse<String> addExercise(ExerciseCreateDTO request, User user) {
@@ -33,7 +35,9 @@ public class ExerciseService {
             exercise.setDescription(request.getDescription());
             exercise.setTitle(request.getTitle());
             exercise.setMuscle(request.getMuscle());
-            exercise.setDescription(request.getDifficulty().toString());
+            exercise.setDifficulty(request.getDifficulty());
+            exercise.setImageURL(request.getImageURL());
+            exercise.setPublicID(request.getPublicID());
             exerciseRepository.save(exercise);
             return new ApiResponse<>(true, "Exercise created.", null);
         } catch (Exception e) {
@@ -44,18 +48,22 @@ public class ExerciseService {
 
     public ApiResponse<String> updateExercise(String id, ExerciseCreateDTO request, User user) {
         try {
-            if(user.getAdmin() == false){
+            if(!user.getAdmin()){
                 return new ApiResponse<>(false, "You do not have access to this action.", null);
             }
             Exercise exerciseExists = exerciseRepository.findById(new ObjectId(id)).get();
             if(exerciseExists == null){
                 return new ApiResponse<>(false, "Exercise doesn't exist.", null);
             }
-
+            if(exerciseExists.getImageURL() != null){
+                cloudinaryService.deleteImage(exerciseExists.getPublicID());
+            }
             exerciseExists.setDescription(request.getDescription());
             exerciseExists.setTitle(request.getTitle());
             exerciseExists.setMuscle(request.getMuscle());
             exerciseExists.setDifficulty(request.getDifficulty());
+            exerciseExists.setImageURL(request.getImageURL());
+            exerciseExists.setPublicID(request.getPublicID());
             exerciseRepository.save(exerciseExists);
             return new ApiResponse<>(true, "Exercise updated.", null);
         } catch (Exception e) {

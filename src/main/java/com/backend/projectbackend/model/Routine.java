@@ -15,13 +15,18 @@ import java.util.List;
 @Document(collection = "routines")
 public class Routine {
     public enum Category{
-        PULL,
-        PUSH,
-        LEG,
-        CHEST,
-        BACK,
-        CORE,
-        FREE
+        PULL("#edede9"),
+        PUSH("#001d3d"),
+        LEG("#ca6702"),
+        CHEST("#e9d8a6"),
+        BACK("#ee9b00"),
+        CORE("#ae2012"),
+        ARMS("#582c4d"),
+        FREE("#9b2226");
+
+        private String color;
+        Category(String color) { this.color = color; }
+        public String getColor() { return color; }
     }
 
     @MongoId

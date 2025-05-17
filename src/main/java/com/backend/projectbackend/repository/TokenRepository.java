@@ -12,5 +12,4 @@ public interface TokenRepository extends MongoRepository<Token, ObjectId> {
     Token findByUserId(ObjectId userId);
 
     Token findByTokenValue(String token);
-
 }

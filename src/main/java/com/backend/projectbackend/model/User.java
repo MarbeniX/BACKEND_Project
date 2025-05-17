@@ -27,6 +27,8 @@ public class User {
 
     private Boolean confirmed = false; //Agregar valor por default
     private Boolean admin = false;
+    private String profilePictureURL;
+    private String publicPictureID;
 
     //Defined routines by the user and used as a template to the training session
     @DBRef
@@ -40,7 +42,7 @@ public class User {
 
     public User() {}
 
-    public User(String username, String password, String email, String token, Boolean confirmed,Boolean admin) {
+    public User(String username, String password, String email, String token, Boolean confirmed,Boolean admin, String profilePictureURL, String publicPictureID) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -49,6 +51,8 @@ public class User {
         this.routines = new ArrayList<>();
         this.trainings = new ArrayList<>();
         this.friends = new ArrayList<>();
+        this.profilePictureURL = profilePictureURL;
+        this.publicPictureID = publicPictureID;
     }
 
     //Getters and setters
@@ -78,6 +82,12 @@ public class User {
 
     public List<Friend> getFriends() { return friends; }
     public void setFriends(List<Friend> friends) { this.friends = friends; }
+
+    public String getProfilePictureURL() { return profilePictureURL; }
+    public void setProfilePictureURL(String profilePictureURL) { this.profilePictureURL = profilePictureURL; }
+
+    public String getPublicPictureID() { return publicPictureID; }
+    public void setPublicPictureID(String publicPictureID) { this.publicPictureID = publicPictureID; }
 
     @Override
     public String toString() {

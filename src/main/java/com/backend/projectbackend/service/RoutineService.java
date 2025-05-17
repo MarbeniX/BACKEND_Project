@@ -224,6 +224,15 @@ public class RoutineService {
             if (!routine.getUserId().equals(user.getId())) {
                 return new ApiResponse<>(false, "This routine doesn't own you", null);
             }
+            if(routine.getExercises() == null || routine.getExercises().isEmpty()) {
+                return new ApiResponse<>(false, "The routine has no exercises", null);
+            }
+            boolean exists = routine.getExercises().stream()
+                    .anyMatch(exercise -> exercise.getId().toHexString().equals(idExercise));
+
+            if (!exists) {
+                return new ApiResponse<>(false, "Exercise not found in this routine", null);
+            }
 
             boolean removed = routine.getExercises().removeIf(exercise ->
                     exercise.getId().toHexString().equals(idExercise)
