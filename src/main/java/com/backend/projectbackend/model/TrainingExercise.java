@@ -15,18 +15,18 @@ public class TrainingExercise {
 
     private Long timeToComplete;
     private Integer setNumber;
-    private Long restTime;
     private Integer weight;
     private Integer reps;
+    private ObjectId trainingSessionId;
 
     public TrainingExercise() {}
 
-    public TrainingExercise(ObjectId exerciseId, Long timeToComplete, Integer setNumber, Long restTime, Integer weight, Integer reps) {
+    public TrainingExercise(ObjectId exerciseId, Long timeToComplete, Integer setNumber, Integer weight, Integer reps, ObjectId trainingSessionId) {
         this.timeToComplete = timeToComplete;
         this.setNumber = setNumber;
-        this.restTime = restTime;
         this.weight = weight;
         this.reps = reps;
+        this.trainingSessionId = trainingSessionId;
     }
 
     public ObjectId getId() { return id; }
@@ -47,15 +47,7 @@ public class TrainingExercise {
     public Integer getReps() { return reps; }
     public void setReps(Integer reps) { this.reps = reps; }
 
-    @Override
-    public String toString() {
-        return "TrainingExercise{" +
-                "id=" + id +
-                ", timeToComplete=" + timeToComplete +
-                ", setNumber=" + setNumber +
-                ", exerciseId=" + exerciseId +
-                ", restTime=" + restTime +
-                ", weight=" + weight +
-                '}';
-    }
+    public ObjectId getTrainingSession() { return trainingSessionId; }
+    public void setTrainingSession(ObjectId trainingSession) { this.trainingSessionId = trainingSession; }
+
 }

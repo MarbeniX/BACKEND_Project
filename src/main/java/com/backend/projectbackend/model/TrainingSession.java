@@ -13,20 +13,19 @@ import java.util.List;
 public class TrainingSession {
     @MongoId
     private ObjectId id;
-
     @DBRef
     private List<TrainingExercise> exercises;
-
     @CreatedDate
     private Date trainingDate;
-
     private ObjectId userId;
+    private ObjectId routineId;
 
     public TrainingSession() {}
 
-    public TrainingSession(List<TrainingExercise> trainingExercisesList, ObjectId userId) {
+    public TrainingSession(List<TrainingExercise> trainingExercisesList, ObjectId userId, ObjectId routineId) {
         this.exercises = trainingExercisesList;
         this.userId = userId;
+        this.routineId = routineId;
     }
 
     //Getters and setters
@@ -42,13 +41,6 @@ public class TrainingSession {
     public ObjectId getUserId() { return userId; }
     public void setUserId(ObjectId userId) { this.userId = userId; }
 
-    @Override
-    public String toString() {
-        return "TrainingSession{" +
-                "id=" + id +
-                ", trainingDate=" + trainingDate +
-                ", userId=" + userId +
-                ", exercises=" + exercises +
-                '}';
-    }
+    public ObjectId getRoutineId() { return routineId; }
+    public void setRoutineId(ObjectId routineId) { this.routineId = routineId; }
 }
