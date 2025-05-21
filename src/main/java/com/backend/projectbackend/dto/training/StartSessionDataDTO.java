@@ -1,17 +1,14 @@
 package com.backend.projectbackend.dto.training;
 
-
-import org.bson.types.ObjectId;
-
 public class StartSessionDataDTO {
-    private ObjectId RoutineId;
+    private String routineId;
 
     public StartSessionDataDTO() {}
 
-    public StartSessionDataDTO(ObjectId RoutineId) {
-        this.RoutineId = RoutineId;
+    public StartSessionDataDTO(String routineId) {
+        this.routineId = routineId;
     }
 
-    public ObjectId getRoutineId() { return RoutineId; }
-    public void setRoutineId(ObjectId RoutineId) { this.RoutineId = RoutineId; }
+    public String getRoutineId() {return routineId;}
+    public void setRoutineId(String routineId) {this.routineId = routineId;}
 }

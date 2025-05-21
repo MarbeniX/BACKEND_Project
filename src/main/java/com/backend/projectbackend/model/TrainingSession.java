@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Document(collection = "trainingSessions")
 public class TrainingSession {
@@ -17,6 +18,7 @@ public class TrainingSession {
     private List<TrainingExercise> exercises;
     @CreatedDate
     private Date trainingDate;
+
     private ObjectId userId;
     private ObjectId routineId;
 
