@@ -6,6 +6,7 @@ import com.backend.projectbackend.dto.training.GetTrainingSessionById;
 import com.backend.projectbackend.dto.training.StartSessionDataDTO;
 import com.backend.projectbackend.model.Routine;
 import com.backend.projectbackend.model.User;
+import com.backend.projectbackend.service.RoutineService;
 import com.backend.projectbackend.service.TrainingService;
 import com.backend.projectbackend.util.responses.ApiResponse;
 import com.cloudinary.Api;
@@ -22,9 +23,11 @@ import java.util.List;
 @RequestMapping("/api/training")
 public class TrainingController {
     private final TrainingService trainingService;
+    private final RoutineService routineService;
 
-    public TrainingController(TrainingService trainingService) {
+    public TrainingController(TrainingService trainingService, RoutineService routineService) {
         this.trainingService = trainingService;
+        this.routineService = routineService;
     }
 
     @PostMapping("/start")
@@ -84,6 +87,17 @@ public class TrainingController {
     ) {
         User user = (User) authentication.getPrincipal(); // Usuario autenticado a partir del JWT
         ApiResponse<List<GetTrainingSessionById>> results = trainingService.searchSessions(filter, user);
+        return ResponseEntity.ok(results);
+    }
+
+    @GetMapping("/searchRoutines")
+    public ResponseEntity<List<RoutineResponseDTO>> searchRoutines(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Routine.Category category,
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal(); // Usuario autenticado a partir del JWT
+        List<RoutineResponseDTO> results = routineService.searchRoutines(name, category, user);
         return ResponseEntity.ok(results);
     }
 }

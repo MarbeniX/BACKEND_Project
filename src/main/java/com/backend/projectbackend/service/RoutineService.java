@@ -244,4 +244,25 @@ public class RoutineService {
             return new ApiResponse<>(false, "Internal server error: " + e.getMessage(), null);
         }
     }
+
+
+    public List<RoutineResponseDTO> searchRoutines(String name, Routine.Category category, User user) {
+        if(name != null && category != null) {
+            List<Routine> routines = routineRepository.findByUserIdAndNameContainingIgnoreCaseAndCategory(new ObjectId(String.valueOf(user.getId())), name, category);
+            List<RoutineResponseDTO> routinesDTO = routines.stream().map(RoutineResponseDTO::new).collect(Collectors.toList());
+            return new ArrayList<>(routinesDTO);
+        }else if(name != null){
+            List<Routine> routines = routineRepository.findByUserIdAndNameContainingIgnoreCase(new ObjectId(String.valueOf(user.getId())), name);
+            List<RoutineResponseDTO> routinesDTO = routines.stream().map(RoutineResponseDTO::new).collect(Collectors.toList());
+            return new ArrayList<>(routinesDTO);
+        }else if(category != null){
+            List<Routine> routines = routineRepository.findByUserIdAndCategory(new ObjectId(String.valueOf(user.getId())), category);
+            List<RoutineResponseDTO> routinesDTO = routines.stream().map(RoutineResponseDTO::new).collect(Collectors.toList());
+            return new ArrayList<>(routinesDTO);
+        }else{
+            List<Routine> routines = routineRepository.findByUserId(new ObjectId(String.valueOf(user.getId())));
+            List<RoutineResponseDTO> routinesDTO = routines.stream().map(RoutineResponseDTO::new).collect(Collectors.toList());
+            return new ArrayList<>(routinesDTO);
+        }
+    }
 }
