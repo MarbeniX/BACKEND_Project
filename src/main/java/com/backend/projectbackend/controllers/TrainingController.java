@@ -1,11 +1,14 @@
 package com.backend.projectbackend.controllers;
 
+import com.backend.projectbackend.dto.routine.RoutineResponseDTO;
 import com.backend.projectbackend.dto.training.FinishSessionDTO;
 import com.backend.projectbackend.dto.training.GetTrainingSessionById;
 import com.backend.projectbackend.dto.training.StartSessionDataDTO;
+import com.backend.projectbackend.model.Routine;
 import com.backend.projectbackend.model.User;
 import com.backend.projectbackend.service.TrainingService;
 import com.backend.projectbackend.util.responses.ApiResponse;
+import com.cloudinary.Api;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -62,5 +65,25 @@ public class TrainingController {
             return ResponseEntity.badRequest().body(response);
         }
         return ResponseEntity.status(201).body(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteTrainingSession(@PathVariable String id, Authentication authentication) throws MessagingException, UnsupportedEncodingException {
+        User user = (User) authentication.getPrincipal(); // Usuario autenticado a partir del JWT
+        ApiResponse<String> response = trainingService.deleteTrainingSession(id, user);
+        if (!response.isSuccess()) {
+            return ResponseEntity.badRequest().body(response);
+        }
+        return ResponseEntity.status(201).body(response);
+    }
+
+    @GetMapping("/searchSessions")
+    public ResponseEntity<ApiResponse<List<GetTrainingSessionById>>> searchSessions(
+            @RequestParam(required = false) String filter,
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal(); // Usuario autenticado a partir del JWT
+        ApiResponse<List<GetTrainingSessionById>> results = trainingService.searchSessions(filter, user);
+        return ResponseEntity.ok(results);
     }
 }

@@ -7,13 +7,15 @@ public class GetTrainingSessionById {
     private List<GetTrainingSessionMarksByIdDTO> marks;
     private Date trainingDate;
     private String routineId;
+    private String sessionId;
 
     public GetTrainingSessionById() {}
 
-    public GetTrainingSessionById(List<GetTrainingSessionMarksByIdDTO> marks, Date trainingDate, String routineId) {
+    public GetTrainingSessionById(List<GetTrainingSessionMarksByIdDTO> marks, Date trainingDate, String routineId, String sessionId) {
         this.marks = marks;
         this.trainingDate = trainingDate;
         this.routineId = routineId;
+        this.sessionId = sessionId;
     }
 
     public List<GetTrainingSessionMarksByIdDTO> getMarks() {return marks;}
@@ -24,4 +26,7 @@ public class GetTrainingSessionById {
 
     public String getRoutineId() {return routineId;}
     public void setRoutineId(String routineId) {this.routineId = routineId;}
+
+    public String getSessionId() {return sessionId;}
+    public void setSessionId(String sessionId) {this.sessionId = sessionId;}
 }

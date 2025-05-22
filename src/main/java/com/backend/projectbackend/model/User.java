@@ -1,6 +1,5 @@
 package com.backend.projectbackend.model;
 
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import org.bson.types.ObjectId;
@@ -33,10 +32,8 @@ public class User {
     //Defined routines by the user and used as a template to the training session
     @DBRef
     private List<Routine> routines;
-
     @DBRef
     private List<TrainingSession> trainings;
-
     @DBRef
     private List<Friend> friends;
 
@@ -78,7 +75,7 @@ public class User {
     public void setRoutines(List<Routine> routines) { this.routines = routines; }
 
     public List<TrainingSession> getTrainings() { return trainings; }
-    public void setTrainings(List<TrainingSession> trainings) {}
+    public void setTrainings(List<TrainingSession> trainings) { this.trainings = trainings; }
 
     public List<Friend> getFriends() { return friends; }
     public void setFriends(List<Friend> friends) { this.friends = friends; }
