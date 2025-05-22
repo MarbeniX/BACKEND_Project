@@ -9,9 +9,11 @@ import com.backend.projectbackend.model.User;
 import com.backend.projectbackend.service.RoutineService;
 import com.backend.projectbackend.service.TrainingService;
 import com.backend.projectbackend.util.responses.ApiResponse;
-import com.cloudinary.Api;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -99,5 +101,20 @@ public class TrainingController {
         User user = (User) authentication.getPrincipal(); // Usuario autenticado a partir del JWT
         List<RoutineResponseDTO> results = routineService.searchRoutines(name, category, user);
         return ResponseEntity.ok(results);
+    }
+
+    @GetMapping("/report/{id}")
+    public ResponseEntity<byte[]> generateSessionPDF(@PathVariable String id, Authentication authentication) {
+        User user = (User) authentication.getPrincipal(); // Usuario autenticado a partir del JWT
+        byte[] pdf = trainingService.generateSessionPDF(id, user);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDisposition(ContentDisposition
+                .inline() // o .attachment() si quieres forzar descarga
+                .filename("routine-report.pdf")
+                .build());
+
+        return ResponseEntity.ok().headers(headers).body(pdf);
     }
 }

@@ -1,22 +1,27 @@
 package com.backend.projectbackend.service;
 
 import com.backend.projectbackend.dto.training.*;
-import com.backend.projectbackend.model.Routine;
-import com.backend.projectbackend.model.TrainingExercise;
-import com.backend.projectbackend.model.TrainingSession;
-import com.backend.projectbackend.model.User;
+import com.backend.projectbackend.model.*;
 import com.backend.projectbackend.repository.*;
 import com.backend.projectbackend.util.responses.ApiResponse;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
-import java.io.Serial;
+import com.itextpdf.kernel.pdf.*;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.*;
+import com.itextpdf.layout.borders.SolidBorder;
+import com.itextpdf.layout.element.Cell;
+
+import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -268,6 +273,73 @@ public class TrainingService {
         } catch (Exception e) {
             e.printStackTrace();
             return new ApiResponse<>(false, "Internal server error: " + e.getMessage(), null);
+        }
+    }
+
+    public byte[] generateSessionPDF(String id, User user) {
+        try {
+            if(trainingRepository.findByUserId(user.getId()) == null) {
+                return null;
+            }
+            TrainingSession sessionExists = trainingRepository.findById(new ObjectId(id)).orElse(null);
+            if(!sessionExists.getUserId().equals(user.getId())) {
+                return null;
+            }
+
+            Routine sessionRoutine;
+
+            if(sessionExists.getRoutineId() == null) {
+                sessionRoutine = new Routine();
+            }else{
+                sessionRoutine = routineRepository.findById(sessionExists.getRoutineId()).orElse(null);
+            }
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            PdfWriter writer = new PdfWriter(out);
+            PdfDocument pdf = new PdfDocument(writer);
+            Document document = new Document(pdf);
+
+            // 1. HEADER
+            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(sessionExists.getTrainingDate());
+
+            Paragraph header = new Paragraph()
+                    .add("Usuario: " + user.getUsername() + "\n")
+                    .add("Rutina: " + (sessionRoutine.getName() != null ? sessionRoutine.getName() : "Ninguna") + "\n")
+                    .add("Fecha: " + formattedDate)
+                    .setTextAlignment(TextAlignment.LEFT)
+                    .setMarginBottom(20);
+            document.add(header);
+
+            // 2. TABLA DE MARCAS
+            Table table = new Table(UnitValue.createPercentArray(new float[]{1, 2, 3, 2, 2}))
+                    .useAllAvailableWidth();
+
+            // Encabezado de la tabla
+            table.addHeaderCell(new Cell().add(new Paragraph("Marca")).setBold().setBorderBottom(new SolidBorder(1)));
+            table.addHeaderCell(new Cell().add(new Paragraph("Tiempo")).setBold().setBorderBottom(new SolidBorder(1)));
+            table.addHeaderCell(new Cell().add(new Paragraph("Ejercicio")).setBold().setBorderBottom(new SolidBorder(1)));
+            table.addHeaderCell(new Cell().add(new Paragraph("Set")).setBold().setBorderBottom(new SolidBorder(1)));
+            table.addHeaderCell(new Cell().add(new Paragraph("Reps")).setBold().setBorderBottom(new SolidBorder(1)));
+
+            // Cuerpo de la tabla
+            int markNumber = 1;
+            List<TrainingExercise> marks = sessionExists.getExercises();
+            for (TrainingExercise mark : marks) {
+                Exercise exercise = exerciseRepository.findById(new ObjectId(mark.getExerciseId().toString())).orElse(null);
+                table.addCell(new Cell().add(new Paragraph(String.valueOf(markNumber++))));
+                table.addCell(new Cell().add(new Paragraph(mark.getTimeToComplete() != null ? mark.getTimeToComplete().toString() : "-")));
+                table.addCell(new Cell().add(new Paragraph(exercise.getTitle() != null ? exercise.getTitle() : "N/A")));
+                table.addCell(new Cell().add(new Paragraph(String.valueOf(mark.getSetNumber()))));
+                table.addCell(new Cell().add(new Paragraph(String.valueOf(mark.getReps()))));
+            }
+
+            document.add(table);
+            document.close();
+
+            return out.toByteArray();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
