@@ -66,4 +66,14 @@ public class UserController {
         }
         return ResponseEntity.status(201).body(response);
     }
+
+    @GetMapping("/getUserPp")
+    public ResponseEntity<ApiResponse<CloudinaryImageDTO>> getUserPp(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        ApiResponse<CloudinaryImageDTO> response = userService.getUserPp(user);
+        if (!response.isSuccess()) {
+            return ResponseEntity.badRequest().body(response);
+        }
+        return ResponseEntity.status(201).body(response);
+    }
 }

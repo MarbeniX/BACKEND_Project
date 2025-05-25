@@ -3,6 +3,7 @@ package com.backend.projectbackend.controllers;
 //Controller - ENDPOINTS
 
 import com.backend.projectbackend.dto.auth.*;
+import com.backend.projectbackend.dto.user.CloudinaryImageDTO;
 import com.backend.projectbackend.model.User;
 import com.backend.projectbackend.service.AuthService;
 import com.backend.projectbackend.util.responses.ApiResponse;
@@ -50,7 +51,7 @@ public class AuthController {
         return ResponseEntity.status(201).body(response);
     }
 
-    @PostMapping("/request-code")
+    @PostMapping("/UserConfirmAccountForm")
     public ResponseEntity<ApiResponse<String>> requestCode(@Valid @RequestBody RequestCodeDTO request) throws MessagingException, UnsupportedEncodingException {
         ApiResponse<String> response = authService.requestCode(request);
         if (!response.isSuccess()) {

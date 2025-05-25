@@ -195,12 +195,12 @@ public class AuthService {
             if (tokenExists == null) {
                 return new ApiResponse<>(false, "Invalid token", null);
             }
-            if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            if (!request.getPassword().equals(request.getPasswordConfirm())) {
                 return new ApiResponse<>(false, "Passwords do not match", null);
             }
 
             User user = authRepository.findById(tokenExists.getUserId()).get();
-            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
             authRepository.save(user);
             tokenRepository.delete(tokenExists);
 

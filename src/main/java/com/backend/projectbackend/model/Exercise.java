@@ -10,7 +10,7 @@ public class Exercise {
     public enum Muscle{
         SHOULDER("#001219"),
         BICEP("#005f73"),
-        TRICEPS("#0a9396"),
+        TRICEP("#0a9396"),
         FOREARM("#94d2bd"),
         CHEST("#e9d8a6"),
         BACK("#ee9b00"),

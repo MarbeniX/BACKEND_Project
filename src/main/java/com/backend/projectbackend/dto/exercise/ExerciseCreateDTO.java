@@ -3,8 +3,6 @@ package com.backend.projectbackend.dto.exercise;
 import com.backend.projectbackend.model.Exercise.Muscle;
 import com.backend.projectbackend.model.Exercise.Difficulty;
 
-import java.awt.*;
-
 public class ExerciseCreateDTO {
     private String description;
     private String title;

@@ -8,29 +8,29 @@ import jakarta.validation.constraints.Size;
 public class UpdatePasswordDTO {
     @NotBlank
     @Size(min = 8)
-    private String newPassword;
+    private String password;
 
     @NotBlank
     @Size(min = 8)
-    private String confirmPassword;
+    private String passwordConfirm;
 
     public UpdatePasswordDTO() {}
 
     public UpdatePasswordDTO(String newPassword, String confirmPassword) {
-        this.newPassword = newPassword;
-        this.confirmPassword = confirmPassword;
+        this.password = newPassword;
+        this.passwordConfirm = confirmPassword;
     }
-    public String getNewPassword() {
-        return newPassword;
+    public String getPassword() {
+        return password;
     }
-    public void setNewPassword(String newPassword) {
-        this.newPassword = newPassword;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public String getConfirmPassword() {
-        return confirmPassword;
+    public String getPasswordConfirm() {
+        return passwordConfirm;
     }
-    public void setConfirmPassword(String confirmPassword) {
-        this.confirmPassword = confirmPassword;
+    public void setPasswordConfirm(String passwordConfirm) {
+        this.passwordConfirm = passwordConfirm;
     }
 }

@@ -34,8 +34,6 @@ public class User {
     private List<Routine> routines;
     @DBRef
     private List<TrainingSession> trainings;
-    @DBRef
-    private List<Friend> friends;
 
     public User() {}
 
@@ -47,7 +45,6 @@ public class User {
         this.admin = admin;
         this.routines = new ArrayList<>();
         this.trainings = new ArrayList<>();
-        this.friends = new ArrayList<>();
         this.profilePictureURL = profilePictureURL;
         this.publicPictureID = publicPictureID;
     }
@@ -76,9 +73,6 @@ public class User {
 
     public List<TrainingSession> getTrainings() { return trainings; }
     public void setTrainings(List<TrainingSession> trainings) { this.trainings = trainings; }
-
-    public List<Friend> getFriends() { return friends; }
-    public void setFriends(List<Friend> friends) { this.friends = friends; }
 
     public String getProfilePictureURL() { return profilePictureURL; }
     public void setProfilePictureURL(String profilePictureURL) { this.profilePictureURL = profilePictureURL; }

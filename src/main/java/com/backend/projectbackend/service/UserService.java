@@ -1,20 +1,15 @@
 package com.backend.projectbackend.service;
 
 import com.backend.projectbackend.dto.auth.UpdatePasswordDTO;
-import com.backend.projectbackend.dto.routine.RoutineResponseDTO;
+import com.backend.projectbackend.dto.user.CloudinaryImageDTO;
 import com.backend.projectbackend.dto.user.changeUsernameDTO;
-import com.backend.projectbackend.model.Routine;
 import com.backend.projectbackend.model.User;
 import com.backend.projectbackend.repository.AuthRepository;
 import com.backend.projectbackend.repository.RoutineRepository;
 import com.backend.projectbackend.util.responses.ApiResponse;
-import org.bson.types.ObjectId;
+import com.cloudinary.Api;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -43,10 +38,10 @@ public class UserService {
 
     public ApiResponse<String> changePassword(UpdatePasswordDTO request, User user) {
         try {
-            if(!request.getNewPassword().equals(request.getConfirmPassword())) {
+            if(!request.getPassword().equals(request.getPasswordConfirm())) {
                 return new ApiResponse<>(false, "Passwords do not match", null);
             }
-            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
             authRepository.save(user);
             return new ApiResponse<>(true, "Saved.", null);
         } catch (Exception e) {
@@ -64,6 +59,21 @@ public class UserService {
             user.setProfilePictureURL(imageUrl);
             authRepository.save(user);
             return new ApiResponse<>(true, "Saved.", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ApiResponse<>(false, "Internal server error: " + e.getMessage(), null);
+        }
+    }
+
+    public ApiResponse<CloudinaryImageDTO> getUserPp(User user) {
+        try {
+            if(user.getProfilePictureURL() == null) {
+                return new ApiResponse<>(false, "User has no profile picture", null);
+            }
+            CloudinaryImageDTO imageDTO = new CloudinaryImageDTO();
+            imageDTO.setUrl(user.getProfilePictureURL());
+            imageDTO.setPublicID(user.getPublicPictureID());
+            return new ApiResponse<CloudinaryImageDTO>(true, "Saved.", imageDTO);
         } catch (Exception e) {
             e.printStackTrace();
             return new ApiResponse<>(false, "Internal server error: " + e.getMessage(), null);
