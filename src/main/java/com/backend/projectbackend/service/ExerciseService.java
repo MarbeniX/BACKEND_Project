@@ -1,6 +1,7 @@
 package com.backend.projectbackend.service;
 
 import com.backend.projectbackend.dto.exercise.ExerciseCreateDTO;
+import com.backend.projectbackend.dto.exercise.ExerciseGetByIdDTO;
 import com.backend.projectbackend.dto.routine.RoutineAddExerciseDTO;
 import com.backend.projectbackend.model.Exercise;
 import com.backend.projectbackend.model.Routine;
@@ -104,6 +105,10 @@ public class ExerciseService {
                 return new ApiResponse<>(false, "Exercise doesn't exist.", null);
             }
 
+            if(exerciseExists.getImageURL() != null){
+                cloudinaryService.deleteImage(exerciseExists.getPublicID());
+            }
+
             List<Routine> allRoutines = routineRepository.findAll();
             for (Routine routine : allRoutines) {
                 boolean modified = routine.getExercises().removeIf(e ->
@@ -116,6 +121,26 @@ public class ExerciseService {
             exerciseRepository.delete(exerciseExists);
 
             return new ApiResponse<>(true, "Exercise deleted.", null);
+        } catch (Exception e) {
+            e.printStackTrace(); // Puedes registrar con un logger en vez de imprimir
+            return new ApiResponse<>(false, "Internal server error: " + e.getMessage(), null);
+        }
+    }
+
+    public ApiResponse<ExerciseGetByIdDTO> getExerciseById(String id, User user ) {
+        try {
+            if(user.getAdmin() == false){
+                return new ApiResponse<>(false, "You do not have access to this action.", null);
+            }
+
+            Exercise exerciseExists = exerciseRepository.findById(new ObjectId(id)).get(); // Esto solo funciona si tienes correctamente anotado @DBRef
+            if (exerciseExists == null) {
+                return new ApiResponse<>(false, "Still no exercises", null);
+            }
+
+            ExerciseGetByIdDTO exerciseGetByIdDTO = new ExerciseGetByIdDTO(exerciseExists);
+
+            return new ApiResponse<>(true, "Exercise.", exerciseGetByIdDTO);
         } catch (Exception e) {
             e.printStackTrace(); // Puedes registrar con un logger en vez de imprimir
             return new ApiResponse<>(false, "Internal server error: " + e.getMessage(), null);

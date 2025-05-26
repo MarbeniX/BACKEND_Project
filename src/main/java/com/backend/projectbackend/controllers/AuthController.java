@@ -3,7 +3,6 @@ package com.backend.projectbackend.controllers;
 //Controller - ENDPOINTS
 
 import com.backend.projectbackend.dto.auth.*;
-import com.backend.projectbackend.dto.user.CloudinaryImageDTO;
 import com.backend.projectbackend.model.User;
 import com.backend.projectbackend.service.AuthService;
 import com.backend.projectbackend.util.responses.ApiResponse;
@@ -33,9 +32,9 @@ public class AuthController {
         return ResponseEntity.status(201).body(response);
     }
 
-    @PostMapping("/confirm-account")
-    public ResponseEntity<ApiResponse<String>> confirmAccount(@Valid @RequestBody AuthConfirmAccountDTO request) throws MessagingException, UnsupportedEncodingException {
-        ApiResponse<String> response = authService.confirmAccount(request);
+    @PostMapping("/{token}")
+    public ResponseEntity<ApiResponse<String>> confirmAccount(@PathVariable String token) throws MessagingException, UnsupportedEncodingException {
+        ApiResponse<String> response = authService.confirmAccount(token);
         if (!response.isSuccess()) {
             return ResponseEntity.badRequest().body(response);
         }
@@ -51,7 +50,7 @@ public class AuthController {
         return ResponseEntity.status(201).body(response);
     }
 
-    @PostMapping("/UserConfirmAccountForm")
+    @PostMapping("/req-code")
     public ResponseEntity<ApiResponse<String>> requestCode(@Valid @RequestBody RequestCodeDTO request) throws MessagingException, UnsupportedEncodingException {
         ApiResponse<String> response = authService.requestCode(request);
         if (!response.isSuccess()) {
@@ -78,9 +77,9 @@ public class AuthController {
         return ResponseEntity.status(201).body(response);
     }
 
-    @PostMapping("/validate-token")
-    public ResponseEntity<ApiResponse<String>> validateToken(@Valid @RequestBody AuthConfirmAccountDTO request) throws MessagingException, UnsupportedEncodingException {
-        ApiResponse<String> response = authService.validateToken(request);
+    @PostMapping("/{token}")
+    public ResponseEntity<ApiResponse<String>> validateToken(@PathVariable String token) throws MessagingException, UnsupportedEncodingException {
+        ApiResponse<String> response = authService.validateToken(token);
         if (!response.isSuccess()) {
             return ResponseEntity.badRequest().body(response);
         }

@@ -1,6 +1,7 @@
 package com.backend.projectbackend.controllers;
 
 import com.backend.projectbackend.dto.exercise.ExerciseCreateDTO;
+import com.backend.projectbackend.dto.exercise.ExerciseGetByIdDTO;
 import com.backend.projectbackend.dto.routine.RoutineAddExerciseDTO;
 import com.backend.projectbackend.dto.user.CloudinaryImageDTO;
 import com.backend.projectbackend.model.User;
@@ -74,6 +75,16 @@ public class ExerciseController {
     public ResponseEntity<ApiResponse<String>> deleteExercise(@PathVariable String id, Authentication authentication) throws MessagingException, UnsupportedEncodingException {
         User user = (User) authentication.getPrincipal(); // Usuario autenticado a partir del JWT
         ApiResponse<String> response = exerciseService.deleteExercise(id, user);
+        if (!response.isSuccess()) {
+            return ResponseEntity.badRequest().body(response);
+        }
+        return ResponseEntity.status(201).body(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<ExerciseGetByIdDTO>> getExerciseById(@PathVariable String id, Authentication authentication) throws MessagingException, UnsupportedEncodingException {
+        User user = (User) authentication.getPrincipal();
+        ApiResponse<ExerciseGetByIdDTO> response = exerciseService.getExerciseById(id, user);
         if (!response.isSuccess()) {
             return ResponseEntity.badRequest().body(response);
         }

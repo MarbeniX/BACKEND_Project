@@ -63,9 +63,9 @@ public class AuthService {
         }
     }
 
-    public ApiResponse<String> confirmAccount(AuthConfirmAccountDTO request) {
+    public ApiResponse<String> confirmAccount(String token) {
         try{
-            Token tokenExists = tokenRepository.findByTokenValue(request.getToken());
+            Token tokenExists = tokenRepository.findByTokenValue(token);
             if (tokenExists == null) {
                 return new ApiResponse<>(false, "Invalid token", null);
             }
@@ -176,9 +176,9 @@ public class AuthService {
         }
     }
 
-    public ApiResponse<String> validateToken(AuthConfirmAccountDTO request) {
+    public ApiResponse<String> validateToken(String token) {
         try{
-            Token tokenExists = tokenRepository.findByTokenValue(request.getToken());
+            Token tokenExists = tokenRepository.findByTokenValue(token);
             if (tokenExists == null) {
                 return new ApiResponse<>(false, "Invalid token", null);
             }
