@@ -11,8 +11,10 @@ import com.backend.projectbackend.util.email.EmailService;
 import com.backend.projectbackend.util.responses.ApiResponse;
 import com.backend.projectbackend.util.token.JwtUtil;
 import com.backend.projectbackend.util.token.TokenGenerator;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 
 @Service
@@ -33,7 +35,7 @@ public class AuthService {
 
     public ApiResponse<String> createAccount(AuthCreateAccountDTO request) {
         if (authRepository.existsByEmail(request.getEmail())) {
-            return new ApiResponse<>(false, "El correo ya está registrado.", null);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
         }
 
         try {
@@ -67,12 +69,12 @@ public class AuthService {
         try{
             Token tokenExists = tokenRepository.findByTokenValue(token);
             if (tokenExists == null) {
-                return new ApiResponse<>(false, "Invalid token", null);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid token");
             }
 
             User userExists = authRepository.findById(tokenExists.getUserId()).get();
             if (userExists == null) {
-                return new ApiResponse<>(false, "User not found", null);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
             }
 
             userExists.setConfirmed();
@@ -89,7 +91,7 @@ public class AuthService {
         try{
             User userExist = authRepository.findByEmail(request.getEmail()).get();
             if (userExist == null) {
-                return new ApiResponse<>(false, "Invalid credentials", null);
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
             }
 
             if(userExist.getConfirmed() == false) {
@@ -103,11 +105,11 @@ public class AuthService {
                         token.getTokenValue()
                 );
                 tokenRepository.save(token);
-                return new ApiResponse<>(false, "Account not confirmed, check your email", null);
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Account not confirmed, check your email.");
             }
 
-            if(userExist.getPassword().equals(passwordEncoder.encode(request.getPassword()))) {
-                return new ApiResponse<>(false, "Wront credentials", null);
+            if(!passwordEncoder.matches(request.getPassword(), userExist.getPassword())) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
             }
 
             String token = jwtUtil.generateToken(userExist.getId().toString(), userExist.getAdmin() );
@@ -122,11 +124,11 @@ public class AuthService {
         try{
             User userExists = authRepository.findByEmail(request.getEmail()).get();
             if (userExists == null) {
-                return new ApiResponse<>(false, "User not found", null);
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
             }
 
             if(userExists.getConfirmed() == true) {
-                return new ApiResponse<>(false, "Email already confirmed", null);
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email already confirmed");
             }
 
             Token token = new Token();
@@ -154,7 +156,7 @@ public class AuthService {
         try{
             User userExists = authRepository.findByEmail(request.getEmail()).get();
             if (userExists == null) {
-                return new ApiResponse<>(false, "User not found", null);
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
             }
             Token token = new Token();
             String generatedToken = TokenGenerator.generateToken();
@@ -180,7 +182,7 @@ public class AuthService {
         try{
             Token tokenExists = tokenRepository.findByTokenValue(token);
             if (tokenExists == null) {
-                return new ApiResponse<>(false, "Invalid token", null);
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token");
             }
             return new ApiResponse<>(true, "Valid token", null);
         }catch (Exception e){
@@ -193,7 +195,7 @@ public class AuthService {
         try{
             Token tokenExists = tokenRepository.findByTokenValue(token);
             if (tokenExists == null) {
-                return new ApiResponse<>(false, "Invalid token", null);
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token");
             }
             if (!request.getPassword().equals(request.getPasswordConfirm())) {
                 return new ApiResponse<>(false, "Passwords do not match", null);
