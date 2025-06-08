@@ -7,6 +7,7 @@ import com.backend.projectbackend.util.responses.ApiResponse;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import org.bson.types.ObjectId;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.itextpdf.kernel.pdf.*;
@@ -14,6 +15,7 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.Cell;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
@@ -147,11 +149,11 @@ public class TrainingService {
 
     public ApiResponse<List<GetTrainingSessionById>> getAllTrainingSession(User user) {
         try {
-            if(routineRepository.findByUserId(user.getId()) == null) {
-                return new ApiResponse<>(true, "User has no sessions", null);
+            if(trainingRepository.findByUserId(user.getId()) == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User has no sessions");
             }
             List<GetTrainingSessionById> trainingSessionsDTO = new ArrayList<>();
-            List<TrainingSession> trainingSessions = trainingRepository.findAllByUserId(user.getId());
+            List<TrainingSession> trainingSessions = user.getTrainings();
 
             for(TrainingSession trainingSession : trainingSessions) {
                 List<GetTrainingSessionMarksByIdDTO> marks = trainingSession.getExercises()
@@ -173,9 +175,10 @@ public class TrainingService {
                     finishSessionDTO.setRoutineId(null);
                     trainingSessionsDTO.add(finishSessionDTO);
                     return new ApiResponse<>(true, "All Training sessions", trainingSessionsDTO);
+                }else{
+                    finishSessionDTO.setRoutineId(trainingSession.getRoutineId().toString());
+                    trainingSessionsDTO.add(finishSessionDTO);
                 }
-                finishSessionDTO.setRoutineId(trainingSession.getRoutineId().toString());
-                trainingSessionsDTO.add(finishSessionDTO);
             }
             return new ApiResponse<>(true, "All Training sessions", trainingSessionsDTO);
         } catch (Exception e) {

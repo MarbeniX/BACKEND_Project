@@ -24,10 +24,23 @@ public class ExerciseGetByIdDTO {
     }
 
     public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
     public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
     public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
     public String getImageURL() { return imageURL; }
+    public void setImageURL(String imageURL) { this.imageURL = imageURL; }
+
     public String getPublicId() { return publicId; }
+    public void setPublicId(String publicId) { this.publicId = publicId; }
+
     public Exercise.Muscle getMuscle() { return muscle; }
+    public void setMuscle(Exercise.Muscle muscle) { this.muscle = muscle; }
+
     public Exercise.Difficulty getDifficulty() { return difficulty; }
+    public void setDifficulty(Exercise.Difficulty difficulty) { this.difficulty = difficulty; }
 }

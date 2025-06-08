@@ -32,7 +32,7 @@ public class AuthController {
         return ResponseEntity.status(201).body(response);
     }
 
-    @PostMapping("/confirm/{token}")
+    @PostMapping("/{token}")
     public ResponseEntity<ApiResponse<String>> confirmAccount(@PathVariable String token) throws MessagingException, UnsupportedEncodingException {
         ApiResponse<String> response = authService.confirmAccount(token);
         if (!response.isSuccess()) {
@@ -68,8 +68,8 @@ public class AuthController {
         return ResponseEntity.status(201).body(response);
     }
 
-    @PostMapping("/update-password/{id}")
-    public ResponseEntity<ApiResponse<String>> updatePassword(@PathVariable String token, @Valid @RequestBody UpdatePasswordDTO request, @PathVariable String id) throws MessagingException, UnsupportedEncodingException {
+    @PostMapping("/update-password/{token}")
+    public ResponseEntity<ApiResponse<String>> updatePassword(@PathVariable String token, @Valid @RequestBody UpdatePasswordDTO request) throws MessagingException, UnsupportedEncodingException {
         ApiResponse<String> response = authService.updatePassword(token, request);
         if (!response.isSuccess()) {
             return ResponseEntity.badRequest().body(response);

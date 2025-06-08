@@ -1,9 +1,11 @@
 package com.backend.projectbackend.dto.routine;
 
+import com.backend.projectbackend.dto.exercise.ExerciseGetByIdDTO;
 import com.backend.projectbackend.model.Exercise;
 import com.backend.projectbackend.model.Routine;
 import com.backend.projectbackend.model.Routine.Category;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RoutineResponseDTO {
@@ -11,7 +13,7 @@ public class RoutineResponseDTO {
     private String name;
     private String description;
     private String creationDate;
-    private List<Exercise> exercises;
+    private List<ExerciseGetByIdDTO> exercises;
     private String userId;
     private Category category;
 
@@ -22,7 +24,7 @@ public class RoutineResponseDTO {
         this.name = routine.getName();
         this.description = routine.getDescription();
         this.creationDate = routine.getCreationDate().toString();
-        this.exercises = routine.getExercises();
+        this.exercises = new ArrayList<>();
         this.userId = routine.getUserId().toHexString();
         this.category = routine.getCategory();
     }
@@ -40,8 +42,8 @@ public class RoutineResponseDTO {
     public String getCreationDate() { return creationDate; }
     public void setCreationDate(String creationDate) { this.creationDate = creationDate; }
 
-    public List<Exercise> getExercises() { return exercises; }
-    public void setExercises(List<Exercise> exercises) { this.exercises = exercises; }
+    public List<ExerciseGetByIdDTO> getExercises() { return exercises; }
+    public void setExercises(List<ExerciseGetByIdDTO> exercises) { this.exercises = exercises; }
 
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }

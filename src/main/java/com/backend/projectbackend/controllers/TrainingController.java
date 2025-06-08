@@ -1,6 +1,7 @@
 package com.backend.projectbackend.controllers;
 
 import com.backend.projectbackend.dto.routine.RoutineResponseDTO;
+import com.backend.projectbackend.dto.routine.RoutineSearchRoutinesResponseDTO;
 import com.backend.projectbackend.dto.training.FinishSessionDTO;
 import com.backend.projectbackend.dto.training.GetTrainingSessionById;
 import com.backend.projectbackend.dto.training.StartSessionDataDTO;
@@ -93,13 +94,13 @@ public class TrainingController {
     }
 
     @GetMapping("/searchRoutines")
-    public ResponseEntity<List<RoutineResponseDTO>> searchRoutines(
+    public ResponseEntity<List<RoutineSearchRoutinesResponseDTO>> searchRoutines(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Routine.Category category,
             Authentication authentication
     ) {
         User user = (User) authentication.getPrincipal(); // Usuario autenticado a partir del JWT
-        List<RoutineResponseDTO> results = routineService.searchRoutines(name, category, user);
+        List<RoutineSearchRoutinesResponseDTO> results = routineService.searchRoutines(name, category, user);
         return ResponseEntity.ok(results);
     }
 

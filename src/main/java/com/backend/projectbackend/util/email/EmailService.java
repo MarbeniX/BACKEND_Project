@@ -56,7 +56,7 @@ public class EmailService {
         String htmlContent = "<p>Hello: <strong>" + name + "</strong>,</p>"
                 + "<p>We received a request to reset your password.</p>"
                 + "<p>Please click the link below to reset it:</p>"
-                + "<p><a href=\"" + frontendUrl + "/auth/reset-password\">Reset Password</a></p>"
+                + "<p><a href=\"" + frontendUrl + "/auth/reset-password/" + token + "\">Reset Password</a></p>"
                 + "<p>And use the following reset code: <b>" + token + "</b></p>"
                 + "<p>This token will expire in 1 hour.</p>";
 

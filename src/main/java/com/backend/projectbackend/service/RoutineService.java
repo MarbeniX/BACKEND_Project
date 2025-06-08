@@ -1,7 +1,9 @@
 package com.backend.projectbackend.service;
 
+import com.backend.projectbackend.dto.exercise.ExerciseGetByIdDTO;
 import com.backend.projectbackend.dto.routine.RoutineAddExerciseDTO;
 import com.backend.projectbackend.dto.routine.RoutineResponseDTO;
+import com.backend.projectbackend.dto.routine.RoutineSearchRoutinesResponseDTO;
 import com.backend.projectbackend.model.Exercise;
 import com.backend.projectbackend.model.Exercise.Muscle;
 import com.backend.projectbackend.model.Exercise.Difficulty;
@@ -13,7 +15,9 @@ import com.backend.projectbackend.repository.ExerciseRepository;
 import com.backend.projectbackend.repository.RoutineRepository;
 import com.backend.projectbackend.util.responses.ApiResponse;
 import org.bson.types.ObjectId;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +57,7 @@ public class RoutineService {
 
             authRepository.save(user);
 
-            return new ApiResponse<>(true, "Routine created.", null);
+            return new ApiResponse<>(true, "Routine created.", savedRoutine.getId().toString());
         } catch (Exception e) {
             e.printStackTrace();
             return new ApiResponse<>(false, "Internal server error: " + e.getMessage(), null);
@@ -62,15 +66,40 @@ public class RoutineService {
 
     public ApiResponse<List<RoutineResponseDTO>> getRoutines(User user) {
         try {
-            List<Routine> routines = user.getRoutines(); // Esto solo funciona si tienes correctamente anotado @DBRef
-            if (routines == null || routines.isEmpty()) {
-                return new ApiResponse<>(false, "Still no routines", null);
+            if(routineRepository.findById(user.getId()) == null){
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User has no routines");
             }
-            List<RoutineResponseDTO> routineDTOs = routines.stream()
-                    .map(RoutineResponseDTO::new)
-                    .collect(Collectors.toList());
+            List<RoutineResponseDTO> routinesDTO = new ArrayList<>();
+            List<Routine> routines = user.getRoutines();
 
-            return new ApiResponse<>(true, "Routines found", routineDTOs);
+            for(Routine routine : routines) {
+                List<ExerciseGetByIdDTO> exerciseDTO = new ArrayList<>();
+                if(routine.getExercises() != null) {
+                    exerciseDTO = routine.getExercises()
+                            .stream()
+                            .map(exercise -> {
+                                ExerciseGetByIdDTO exerciseGetByIdDTO = new ExerciseGetByIdDTO();
+                                exerciseGetByIdDTO.setId(exercise.getId().toHexString());
+                                exerciseGetByIdDTO.setTitle(exercise.getTitle());
+                                exerciseGetByIdDTO.setDescription(exercise.getDescription());
+                                exerciseGetByIdDTO.setImageURL(exercise.getImageURL());
+                                exerciseGetByIdDTO.setPublicId(exercise.getPublicID());
+                                exerciseGetByIdDTO.setDifficulty(exercise.getDifficulty());
+                                exerciseGetByIdDTO.setMuscle(exercise.getMuscle());
+                                return exerciseGetByIdDTO;
+                            }).collect(Collectors.toList());
+                }
+                RoutineResponseDTO routineResponseDTO = new RoutineResponseDTO();
+                routineResponseDTO.setId(routine.getId().toHexString());
+                routineResponseDTO.setName(routine.getName());
+                routineResponseDTO.setDescription(routine.getDescription());
+                routineResponseDTO.setCreationDate(routine.getCreationDate().toString());
+                routineResponseDTO.setUserId(routine.getUserId().toHexString());
+                routineResponseDTO.setCategory(routine.getCategory());
+                routineResponseDTO.setExercises(exerciseDTO);
+                routinesDTO.add(routineResponseDTO);
+            }
+            return new ApiResponse<>(true, "Routines found", routinesDTO);
         } catch (Exception e) {
             e.printStackTrace();
             return new ApiResponse<>(false, "Internal server error: " + e.getMessage(), null);
@@ -81,12 +110,12 @@ public class RoutineService {
         try {
             Optional<Routine> optionalRoutine = routineRepository.findById(new ObjectId(id));
             if (optionalRoutine.isEmpty()) {
-                return new ApiResponse<>(false, "Routine not found", null);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Routine not found");
             }
 
             Routine routine = optionalRoutine.get();
             if (!routine.getUserId().equals(user.getId())) {
-                return new ApiResponse<>(false, "This routine doesn't own you", null);
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "This routine does not belong to the user");
             }
 
             routine.setName(request.getName());
@@ -106,13 +135,32 @@ public class RoutineService {
         try {
             Optional<Routine> optionalRoutine = routineRepository.findById(new ObjectId(id));
             if (optionalRoutine.isEmpty()) {
-                return new ApiResponse<>(false, "Routine not found", null);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Routine not found");
             }
             Routine routine = optionalRoutine.get();
             if (!routine.getUserId().equals(user.getId())) {
-                return new ApiResponse<>(false, "This routine doesn't own you", null);
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "This routine does not belong to the user");
+            }
+
+            List<ExerciseGetByIdDTO> exerciseDTO = new ArrayList<>();
+            if(routine.getExercises() != null) {
+                exerciseDTO = routine.getExercises()
+                        .stream()
+                        .map(exercise -> {
+                            ExerciseGetByIdDTO exerciseGetByIdDTO = new ExerciseGetByIdDTO();
+                            exerciseGetByIdDTO.setId(exercise.getId().toHexString());
+                            exerciseGetByIdDTO.setTitle(exercise.getTitle());
+                            exerciseGetByIdDTO.setDescription(exercise.getDescription());
+                            exerciseGetByIdDTO.setImageURL(exercise.getImageURL());
+                            exerciseGetByIdDTO.setPublicId(exercise.getPublicID());
+                            exerciseGetByIdDTO.setDifficulty(exercise.getDifficulty());
+                            exerciseGetByIdDTO.setMuscle(exercise.getMuscle());
+                            return exerciseGetByIdDTO;
+                        }).collect(Collectors.toList());
             }
             RoutineResponseDTO dto = new RoutineResponseDTO(routine);
+            dto.setExercises(exerciseDTO);
+
             return new ApiResponse<>(true, "Routine found.", dto);
         } catch (Exception e) {
             e.printStackTrace(); // Puedes registrar con un logger en vez de imprimir
@@ -246,23 +294,34 @@ public class RoutineService {
     }
 
 
-    public List<RoutineResponseDTO> searchRoutines(String name, Routine.Category category, User user) {
+    public List<RoutineSearchRoutinesResponseDTO> searchRoutines(String name, Routine.Category category, User user) {
         if(name != null && category != null) {
             List<Routine> routines = routineRepository.findByUserIdAndNameContainingIgnoreCaseAndCategory(new ObjectId(String.valueOf(user.getId())), name, category);
-            List<RoutineResponseDTO> routinesDTO = routines.stream().map(RoutineResponseDTO::new).collect(Collectors.toList());
-            return new ArrayList<>(routinesDTO);
+            List<RoutineSearchRoutinesResponseDTO> routineResponse = getRoutineSearchRoutinesResponseDTOS(routines);
+            return new ArrayList<>(routineResponse);
         }else if(name != null){
             List<Routine> routines = routineRepository.findByUserIdAndNameContainingIgnoreCase(new ObjectId(String.valueOf(user.getId())), name);
-            List<RoutineResponseDTO> routinesDTO = routines.stream().map(RoutineResponseDTO::new).collect(Collectors.toList());
-            return new ArrayList<>(routinesDTO);
+            List<RoutineSearchRoutinesResponseDTO> routineResponse = getRoutineSearchRoutinesResponseDTOS(routines);
+            return new ArrayList<>(routineResponse);
         }else if(category != null){
             List<Routine> routines = routineRepository.findByUserIdAndCategory(new ObjectId(String.valueOf(user.getId())), category);
-            List<RoutineResponseDTO> routinesDTO = routines.stream().map(RoutineResponseDTO::new).collect(Collectors.toList());
-            return new ArrayList<>(routinesDTO);
+            List<RoutineSearchRoutinesResponseDTO> routineResponse = getRoutineSearchRoutinesResponseDTOS(routines);
+            return new ArrayList<>(routineResponse);
         }else{
             List<Routine> routines = routineRepository.findByUserId(new ObjectId(String.valueOf(user.getId())));
-            List<RoutineResponseDTO> routinesDTO = routines.stream().map(RoutineResponseDTO::new).collect(Collectors.toList());
-            return new ArrayList<>(routinesDTO);
+            List<RoutineSearchRoutinesResponseDTO> routineResponse = getRoutineSearchRoutinesResponseDTOS(routines);
+            return new ArrayList<>(routineResponse);
         }
+    }
+
+    private static List<RoutineSearchRoutinesResponseDTO> getRoutineSearchRoutinesResponseDTOS(List<Routine> routines) {
+        List<RoutineSearchRoutinesResponseDTO> routineResponse = new ArrayList<>();
+        for(Routine routine : routines) {
+            RoutineSearchRoutinesResponseDTO routineResponseDTO = new RoutineSearchRoutinesResponseDTO();
+            routineResponseDTO.setId(routine.getId().toHexString());
+            routineResponseDTO.setName(routine.getName());
+            routineResponse.add(routineResponseDTO);
+        }
+        return routineResponse;
     }
 }
