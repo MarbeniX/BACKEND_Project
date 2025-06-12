@@ -28,9 +28,10 @@ public class ExerciseController {
     }
 
     @PostMapping(value = "/add-exercise")
-    public ResponseEntity<ApiResponse<String>> addExercise(@ModelAttribute ExerciseCreateDTO request, @RequestParam("image") MultipartFile image, Authentication authentication) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<ApiResponse<String>> addExercise(@ModelAttribute ExerciseCreateDTO request, Authentication authentication) throws MessagingException, UnsupportedEncodingException {
         User user = (User) authentication.getPrincipal(); // Usuario autenticado a partir del JWT
         try {
+            MultipartFile image = request.getImage();
             CloudinaryImageDTO dataImage = CloudinaryService.uploadImageExercise(image);
             request.setImageURL(dataImage.getUrl());
             request.setPublicID(dataImage.getPublicID());
@@ -44,16 +45,9 @@ public class ExerciseController {
         return ResponseEntity.status(201).body(response);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<String>> updateExercise(@PathVariable String id, @RequestBody ExerciseCreateDTO request, @RequestParam("image") MultipartFile image, Authentication authentication) throws MessagingException, UnsupportedEncodingException {
+    @PatchMapping("/{id}")
+    public ResponseEntity<ApiResponse<String>> updateExercise(@PathVariable String id, @ModelAttribute ExerciseCreateDTO request, Authentication authentication) throws MessagingException, UnsupportedEncodingException {
         User user = (User) authentication.getPrincipal(); // Usuario autenticado a partir del JWT
-        try {
-            CloudinaryImageDTO dataImage = CloudinaryService.uploadImageExercise(image);
-            request.setImageURL(dataImage.getUrl());
-            request.setPublicID(dataImage.getPublicID());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         ApiResponse<String> response = exerciseService.updateExercise(id, request, user);
         if (!response.isSuccess()) {
             return ResponseEntity.badRequest().body(response);

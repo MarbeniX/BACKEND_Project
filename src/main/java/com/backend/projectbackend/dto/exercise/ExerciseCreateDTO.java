@@ -2,6 +2,7 @@ package com.backend.projectbackend.dto.exercise;
 
 import com.backend.projectbackend.model.Exercise.Muscle;
 import com.backend.projectbackend.model.Exercise.Difficulty;
+import org.springframework.web.multipart.MultipartFile;
 
 public class ExerciseCreateDTO {
     private String description;
@@ -10,16 +11,18 @@ public class ExerciseCreateDTO {
     private Difficulty difficulty;
     private String imageURL;
     private String publicID;
+    private MultipartFile image;
 
     public ExerciseCreateDTO() {}
 
-    public ExerciseCreateDTO(String description, String title, Muscle muscle, Difficulty difficulty, String imageURL, String publicID) {
+    public ExerciseCreateDTO(String description, String title, Muscle muscle, Difficulty difficulty, String imageURL, String publicID, MultipartFile image) {
         this.description = description;
         this.title = title;
         this.muscle = muscle;
         this.difficulty = difficulty;
         this.imageURL = imageURL;
         this.publicID = publicID;
+        this.image = image;
     }
 
     //Setters and getters
@@ -40,4 +43,7 @@ public class ExerciseCreateDTO {
 
     public String getPublicID() {return publicID;}
     public void setPublicID(String publicID) {this.publicID = publicID;}
+
+    public MultipartFile getImage() {return image;}
+    public void setImage(MultipartFile image) {this.image = image;}
 }

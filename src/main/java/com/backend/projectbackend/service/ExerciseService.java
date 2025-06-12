@@ -3,6 +3,7 @@ package com.backend.projectbackend.service;
 import com.backend.projectbackend.dto.exercise.ExerciseCreateDTO;
 import com.backend.projectbackend.dto.exercise.ExerciseGetByIdDTO;
 import com.backend.projectbackend.dto.routine.RoutineAddExerciseDTO;
+import com.backend.projectbackend.dto.user.CloudinaryImageDTO;
 import com.backend.projectbackend.model.Exercise;
 import com.backend.projectbackend.model.Routine;
 import com.backend.projectbackend.model.User;
@@ -11,7 +12,9 @@ import com.backend.projectbackend.repository.RoutineRepository;
 import com.backend.projectbackend.util.responses.ApiResponse;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,12 +55,27 @@ public class ExerciseService {
             if(!user.getAdmin()){
                 return new ApiResponse<>(false, "You do not have access to this action.", null);
             }
+
             Exercise exerciseExists = exerciseRepository.findById(new ObjectId(id)).get();
             if(exerciseExists == null){
                 return new ApiResponse<>(false, "Exercise doesn't exist.", null);
             }
-            if(exerciseExists.getImageURL() != null){
-                cloudinaryService.deleteImage(exerciseExists.getPublicID());
+
+            MultipartFile image = request.getImage();
+            if(image != null && !image.isEmpty()) {
+                try {
+                    CloudinaryImageDTO dataImage = CloudinaryService.uploadImageExercise(image);
+                    request.setImageURL(dataImage.getUrl());
+                    request.setPublicID(dataImage.getPublicID());
+                    if(exerciseExists.getPublicID() != null){
+                        cloudinaryService.deleteImage(exerciseExists.getPublicID());
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                request.setImageURL(exerciseExists.getImageURL());
+                request.setPublicID(exerciseExists.getPublicID());
             }
             exerciseExists.setDescription(request.getDescription());
             exerciseExists.setTitle(request.getTitle());
