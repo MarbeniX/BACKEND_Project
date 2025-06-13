@@ -66,8 +66,11 @@ public class RoutineService {
 
     public ApiResponse<List<RoutineResponseDTO>> getRoutines(User user) {
         try {
-            if(routineRepository.findById(user.getId()) == null){
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User has no routines");
+            if(user.getRoutines() == null) {
+                List<Routine> routines = new ArrayList<>();
+                user.setRoutines(routines);
+                authRepository.save(user);
+                return new ApiResponse<>(false, "User has no routines", null);
             }
             List<RoutineResponseDTO> routinesDTO = new ArrayList<>();
             List<Routine> routines = user.getRoutines();
