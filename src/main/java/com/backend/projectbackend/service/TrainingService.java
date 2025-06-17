@@ -44,12 +44,6 @@ public class TrainingService {
 
     public ApiResponse<String> startTraining(StartSessionDataDTO request, User user) {
         try {
-            if(request.getRoutineId() != null) {
-                Routine routineExists = routineRepository.findById(new ObjectId(request.getRoutineId())).orElse(null);
-                if(!routineExists.getUserId().equals(user.getId())) {
-                    return new ApiResponse<>(false, "You don't have access to this routine", null);
-                }
-            }
             TrainingSession trainingSession = new TrainingSession();
             trainingSession.setUserId(user.getId());
             if(request.getRoutineId() == null) {
@@ -149,9 +143,11 @@ public class TrainingService {
 
     public ApiResponse<List<GetTrainingSessionById>> getAllTrainingSession(User user) {
         try {
-            if(trainingRepository.findByUserId(user.getId()) == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User has no sessions");
+            List<TrainingSession> sessionsExists = trainingRepository.findAllByUserId(user.getId());
+            if(sessionsExists == null) {
+                return new ApiResponse<>(false, "User has no sessions", null);
             }
+
             List<GetTrainingSessionById> trainingSessionsDTO = new ArrayList<>();
             List<TrainingSession> trainingSessions = user.getTrainings();
 

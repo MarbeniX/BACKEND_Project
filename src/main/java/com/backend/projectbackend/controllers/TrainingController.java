@@ -34,7 +34,7 @@ public class TrainingController {
     }
 
     @PostMapping("/start")
-    public ResponseEntity<ApiResponse<String>> startTraining(@RequestBody StartSessionDataDTO request, Authentication authentication) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<ApiResponse<String>> startTraining(@Valid @RequestBody StartSessionDataDTO request, Authentication authentication) throws MessagingException, UnsupportedEncodingException {
         User user = (User) authentication.getPrincipal(); // Usuario autenticado a partir del JWT
         ApiResponse<String> response = trainingService.startTraining(request, user);
         if (!response.isSuccess()) {
