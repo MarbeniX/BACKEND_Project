@@ -9,7 +9,6 @@ WORKDIR /app
 # Copia los archivos de configuración de Maven para aprovechar el cacheo de dependencias
 # Esto asegura que si solo cambian los archivos de código, las dependencias no se descarguen de nuevo
 COPY pom.xml .
-COPY settings.xml .
 
 # Descarga las dependencias de Maven (solo si pom.xml o settings.xml cambian)
 # Esto acelera las reconstrucciones si no hay cambios en las dependencias
