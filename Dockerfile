@@ -2,7 +2,7 @@
 # ETAPA 1: Construcción (Build Stage)
 # Esta etapa compila tu aplicación Spring Boot y genera el JAR ejecutable.
 # =========================================================================
-FROM maven:3.9.6-jdk-17 AS build
+FROM maven:3-openjdk-17 AS build  
 # Establece el directorio de trabajo dentro del contenedor para la construcción
 WORKDIR /app
 
