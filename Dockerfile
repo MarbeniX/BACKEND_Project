@@ -27,7 +27,7 @@ RUN mvn clean package -DskipTests
 # Esta etapa toma el JAR compilado de la etapa anterior y lo prepara para ejecución.
 # =========================================================================
 # Usa una imagen base ligera de OpenJDK solo con el JRE para la ejecución
-FROM openjdk:17-slim-jre
+FROM openjdk:17-jre-slim-bullseye 
 
 # Establece el directorio de trabajo dentro del contenedor para la aplicación
 WORKDIR /app
