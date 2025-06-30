@@ -277,25 +277,8 @@ public class TrainingService {
 
     public byte[] generateSessionPDF(String id, User user) {
         try {
-            if(trainingRepository.findByUserId(user.getId()) == null) {
-                return null;
-            }
-            TrainingSession sessionExists = trainingRepository.findById(new ObjectId(id))
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sesión de entrenamiento no encontrada"));
-
-            System.out.println(sessionExists);
-
-            if (!sessionExists.getUserId().equals(user.getId())) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes acceso a esta sesión");
-            }
-
-            Routine sessionRoutine;
-
-            if(sessionExists.getRoutineId() == null) {
-                sessionRoutine = new Routine();
-            }else{
-                sessionRoutine = routineRepository.findById(sessionExists.getRoutineId()).orElse(null);
-            }
+            TrainingSession sessionExists = trainingRepository.findById(new ObjectId(id)).orElse(null);
+            Routine sessionRoutine = routineRepository.findById(sessionExists.getRoutineId()).orElse(null);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             PdfWriter writer = new PdfWriter(out);
