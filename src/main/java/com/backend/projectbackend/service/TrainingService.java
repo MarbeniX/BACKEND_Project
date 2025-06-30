@@ -280,9 +280,13 @@ public class TrainingService {
             if(trainingRepository.findByUserId(user.getId()) == null) {
                 return null;
             }
-            TrainingSession sessionExists = trainingRepository.findById(new ObjectId(id)).orElse(null);
-            if(!sessionExists.getUserId().equals(user.getId())) {
-                return null;
+            TrainingSession sessionExists = trainingRepository.findById(new ObjectId(id))
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sesión de entrenamiento no encontrada"));
+
+            System.out.println(sessionExists);
+
+            if (!sessionExists.getUserId().equals(user.getId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes acceso a esta sesión");
             }
 
             Routine sessionRoutine;
@@ -337,8 +341,9 @@ public class TrainingService {
 
             return out.toByteArray();
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        e.printStackTrace();
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error generando PDF");
     }
+
+}
 }
