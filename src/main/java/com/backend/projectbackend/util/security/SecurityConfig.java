@@ -58,7 +58,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         
-        config.setAllowedOrigins(List.of("https://backend-project-front-five.vercel.app/", "http://localhost:8080", "http://localhost:5173", "https://bclockt.vercel.app/"));
+        config.setAllowedOrigins(List.of("https://backend-project-front-five.vercel.app/", "http://localhost:8080", "http://localhost:5173", "https://bclockt.vercel.app/", "https://bclobkt.vercel.app"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
