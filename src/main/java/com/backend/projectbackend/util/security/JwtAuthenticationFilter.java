@@ -33,10 +33,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
+        String path = request.getServletPath();
+
+        // 🚨 Ignorar rutas públicas
+        if (path.startsWith("/api/auth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response); // No token => sigue con el flujo normal (puede fallar luego si la ruta requiere auth)
+            filterChain.doFilter(request, response); // No token => sigue con el flujo normal
             return;
         }
 
@@ -59,6 +67,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        filterChain.doFilter(request, response); // Continúa con el siguiente filtro o endpoint
+        filterChain.doFilter(request, response);
     }
+
 }
