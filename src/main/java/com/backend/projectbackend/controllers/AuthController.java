@@ -151,18 +151,4 @@ public class AuthController {
         }
         return ResponseEntity.status(201).body(response);
     }
-
-    @Operation(summary = "Obtener información del usuario autenticado (Endpoint Protegido)",
-               description = "Devuelve los datos del usuario que realiza la petición. Requiere un token JWT válido en la cabecera 'Authorization'.")
-    @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Información del usuario obtenida.",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDTO.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "No autorizado. Se requiere token JWT.", content = @Content)
-    })
-    @SecurityRequirement(name = "bearerAuth")
-    @GetMapping("/user")
-    public ResponseEntity<?> getUserInfo(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return ResponseEntity.ok(new UserDTO(user));
-    }
 }
